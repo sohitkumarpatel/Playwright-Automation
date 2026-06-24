@@ -53,7 +53,7 @@ test('Chekbox',async ({page})=>{
         await expect(checkbox).toBeVisible();
         await expect(checkbox).toBeEnabled();
         await checkbox.check();
-        expect(await checkbox.isChecked()).toBe(true);
+        expect(await checkbox.isChecked()).toBeTruthy();
         expect(checkbox).toBeChecked();
     
     }

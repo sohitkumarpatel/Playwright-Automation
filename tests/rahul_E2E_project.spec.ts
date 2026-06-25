@@ -38,7 +38,7 @@ test('Login test verify', async({page})=>{
    //Actions
    await page.waitForLoadState('networkidle');
    await product_title.first().waitFor();
-   const title=product_title.allTextContents();
+   const title= await product_title.allTextContents();
    console.log("All the products ==>",title);
    const count =await products.count();
    for(let i:number =0;i<count;i++){
@@ -77,6 +77,7 @@ test('Login test verify', async({page})=>{
 
    //ckicked on order from menu 
    await page.locator("button[routerlink*='myorders']").click();
+   await page.locator("tbody").waitFor();
    const rows:Locator=page.locator("tbody tr");
    for(let i=0;i<await rows.count();i++){
         const rowOrder_id=await rows.nth(i).locator("th").textContent();
@@ -86,11 +87,25 @@ test('Login test verify', async({page})=>{
         }
 
    }
-   await expect(page.locator("p[class=tagline]")).toHaveText("Thank you for Shopping With Us");
-   await expect(page.locator("div[class=title]")).toHaveText(" ZARA COAT 3 ");
-   const orderdeatil_page= await page.locator("div[class='col-text -main']").textContent();
-   await expect(orderdeatil_page && order?.includes(orderdeatil_page)).toBeTruthy();
-   await page.waitForTimeout(10000);
+   //verify the order id
+    const orderIdDetails = await page.locator(".col-text").textContent();
+    expect(orderIdDetails && order?.includes(orderIdDetails)).toBeTruthy();
+
+    await page.waitForLoadState('networkidle');
+
+    //Verify the thank you message
+    const message = page.locator("(//p[@class='tagline'])[1]");
+    await expect(message).toBeVisible();
+    await expect(message).toContainText("Thank you for Shopping With Us");
+
+    //await expect(page.locator("//p[@class='tagline']")).toContainText("Thank you for Shopping With Us");
+
+   //verify the title
+   const title1 =await page.locator("//div[@class='title']").textContent();
+   console.log("Title is: ",title1);
+   await expect(title1).toContain(" ZARA COAT 3 ");
+
+   //await page.waitForTimeout(10000);
    //await page.pause();
 
 });
